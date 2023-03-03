@@ -42,6 +42,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool darkmode = false;
   dynamic savedThemeMode;
+  String? iconAdess;
 
   // faire de sorte que des le telechargement, on puisse detecter quel est le thème actuellement présent
 
@@ -54,10 +55,16 @@ class _MyHomePageState extends State<MyHomePage> {
     savedThemeMode = await AdaptiveTheme.getThemeMode();
     if (savedThemeMode.toString() == 'AdaptiveThemeMode.dark') {
       print('theme sombre');
-      darkmode = true;
+      setState(() {
+        darkmode = true;
+        iconAdess = "images/dark.png";
+      });
     } else {
       print('theme clair');
-      darkmode = false;
+      setState(() {
+        darkmode = false;
+        iconAdess = "images/ligth.png";
+      });
     }
   }
 
@@ -71,6 +78,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Container(
+              height: 150,
+              child: iconAdess != null ? Image.asset(iconAdess!) : Container(),
+            ),
+            SizedBox(
+              height: 40.0,
+            ),
             Text("Changer de thème",
                 style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold)),
             SizedBox(
@@ -81,11 +95,29 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: 20.0,
             ),
-            ElevatedButton(
+            SwitchListTile(
+                title: Text('mode sombre'),
+                activeColor: Colors.orange,
+                secondary: const Icon(Icons.nightlight_round),
+                value: darkmode,
+                onChanged: (bool value) {
+                  print(value);
+                  if (value == true) {
+                    AdaptiveTheme.of(context).setDark();
+                    iconAdess = "images/dark.png";
+                  } else {
+                    AdaptiveTheme.of(context).setLight();
+                    iconAdess = "images/ligth.png";
+                  }
+                  setState(() {
+                    darkmode = value;
+                  });
+                })
+            /* ElevatedButton(
                 onPressed: () {
                   AdaptiveTheme.of(context).toggleThemeMode();
                 },
-                child: Text('Changer de theme'))
+                child: Text('Changer de theme')) */
           ],
         ),
       ),
